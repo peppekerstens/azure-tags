@@ -13,17 +13,12 @@ class tag {
     {}
 }
 
-function Out-AzTag{
+function ConvertTo-AzTag{
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory)]
+        #enable pipelining
+        [Parameter(Mandatory,ValueFromPipeline=$true)]
         $resources
-        ,
-        #[Parameter(ParameterSetName="Id")]
-        $ResourceId
-        ,
-        #[Parameter(ParameterSetName="Type")]
-        $ResourceType
     )
 
     $tagged = $resources.where{$_.tags}
@@ -32,11 +27,18 @@ function Out-AzTag{
             $tag = [tag]::new()
             $tag.Name = $tagkey
             $tag.Value = $t.tags[$tagkey]
-            If ($ResourceId){$tag.ResourceId = $ResourceId}else{$tag.ResourceId = $t.ResourceId}
-            If ($ResourceType){$tag.ResourceType = $ResourceType}else{$tag.ResourceType = $t.ResourceType}
+            $tag.ResourceId = $t.ResourceId
+            $tag.ResourceType = $t.ResourceType
             $tag #| where-object {($_.Name -like $name) -and  ($_.Value -like $Value)}
         } 
     }
+}
+
+function Get-AzTagResource{
+    [CmdletBinding()]
+    param()
+    $resources = Get-AzResource @PSBoundParameters
+    ConvertTo-AzTag -resources $resources
 }
 
 function Get-AzTagSubscription{
@@ -48,7 +50,44 @@ function Get-AzTagSubscription{
     $resources = Get-AzSubscription @PSBoundParameters
     $resources | ForEach-Object {$_ | Add-Member -NotePropertyName ResourceId -NotePropertyValue "/susbscriptions/$($_.SubscriptionId)"}
     $resources | ForEach-Object {$_ | Add-Member -NotePropertyName ResourceType -NotePropertyValue $ResourceType}
-    Out-AzTag -Resources $resources
+    ConvertTo-AzTag -Resources $resources
+}
+
+function Select-AzTag{
+    [CmdletBinding(DefaultParameterSetName='none')]
+    param(
+        [Parameter(Mandatory,ValueFromPipeline=$true)]
+        [tag[]]$InputObject
+        ,
+        #[Parameter(ParameterSetName="Name")]
+        $Name = '*'
+        ,
+        #[Parameter(ParameterSetName="Name")]
+        $Value = '*'
+        ,
+        #[Parameter(ParameterSetName="Id")]
+        $ResourceId = '*'
+        ,
+        #[Parameter(ParameterSetName="Type")]
+        $ResourceType = '*'
+    )
+    
+    <#
+    if ($ResourceId){
+        $splittedResourceId = $ResourceId.Trim('/').Split('/')
+        if (($splittedResourceId.count -eq 2) -and `
+            ($splittedResourceId[0] -eq 'subscriptions') -and `
+            ([guid]$splittedResourceId[1])){
+                $splatSubscriptionId.SubscriptionId = $splittedResourceId[1]
+                $ResourceType = 'Microsoft.Subscription'
+        }
+    }
+    #>
+    process{
+        foreach ($item in $InputObject) {
+            $item | where-object {($_.Name -like $name) -and  ($_.Value -like $Value) -and  ($_.ResourceId -like $ResourceId) -and ($_.ResourceType -like $ResourceType)}
+        }
+    }
 }
 
 function Get-AzTag{
@@ -69,28 +108,19 @@ function Get-AzTag{
 
     $PSBoundParameters.Remove('Name') | Out-Null
     $PSBoundParameters.Remove('Value') | Out-Null
-    $splatSubscriptionId = @{}
-    if ($ResourceId){
-        $splittedResourceId = $ResourceId.Trim('/').Split('/')
-        if (($splittedResourceId.count -eq 2) -and `
-            ($splittedResourceId[0] -eq 'subscriptions') -and `
-            ([guid]$splittedResourceId[1])){
-                $splatSubscriptionId.SubscriptionId = $splittedResourceId[1]
-                $ResourceType = 'Microsoft.Subscription'
-        }
-    }
+
+    Get-AzTagSubscription | Select-AzTag @PSBoundParameters
+    Get-AzTagResource | Select-AzTag @PSBoundParameters
+    <#
     switch ($ResourceType){
         'Microsoft.Subscription' {
-            $resources = Get-AzSubscription @splatSubscriptionId
-            $resources | ForEach-Object {$_ | Add-Member -NotePropertyName ResourceId -NotePropertyValue "/susbscriptions/$($_.SubscriptionId)"}
-            $resources | ForEach-Object {$_ | Add-Member -NotePropertyName ResourceType -NotePropertyValue $ResourceType}
-            Out-AzTag -Resources $resources @PSBoundParameters
+            Get-AzTagSubscription | Select-AzTag @PSBoundParameters
         }
         Default {
-            $resources = Get-AzResource @PSBoundParameters
-            Out-AzTag -Resources $resources
+            Get-AzTagResource | Select-AzTag @PSBoundParameters
         }
     }
+    #>
 }
 
 function Set-AzTag{
