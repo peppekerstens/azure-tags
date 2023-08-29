@@ -1,0 +1,58 @@
+[
+    {
+        "Name" : "DesktopSubnet",
+        "Value" : true,
+        "ResourceId" : "/subscriptions/*/resourceGroups/cs-iton-p-wvdupd-rg/providers/Microsoft.Storage/storageAccounts/csitonpwvdupd",
+        "ResourceGroupName" : "*-rg",
+        "ResourceName" : "*-net-vnet",
+        "ServiceName" : "net",
+        "Location" : "WestEurope",
+        "ResourceType" : "Microsoft.Storage/storageAccounts"
+    },
+    {
+        "Name" : "PrivateSubnet",
+        "Value" : true,
+        "ResourceId" : "/subscriptions/*/resourceGroups/cs-iton-p-wvdupd-rg/providers/Microsoft.Storage/storageAccounts/csitonpwvdupd",
+        "ResourceGroupName" : "*-rg",
+        "Location" : "WestEurope",
+        "ResourceType" : "Microsoft.Storage/storageAccounts"
+    },
+    {
+        "Name" : "cnocmonitoring",
+        "Value" : true,
+        "ResourceId" : "/subscriptions/*/resourceGroups/cs-iton-p-wvdupd-rg/providers/Microsoft.Storage/storageAccounts/csitonpwvdupd",
+        "ResourceGroupName" : "*-rg",
+        "Location" : "WestEurope",
+        "ResourceType" : "Microsoft.Storage/storageAccounts"
+    },
+    {
+        "Name" : "CloudDesktop",
+        "Value" : "kostenplaats",
+        "ResourceId" : "/subscriptions/*/resourceGroups/cs-iton-p-wvdupd-rg/providers/Microsoft.Storage/storageAccounts/csitonpwvdupd",
+        "ResourceGroupName" : "*-rg",
+        "Location" : "WestEurope",
+        "ResourceType" : "Microsoft.DesktopVirtualization/applicationgroups"
+    },
+    {
+        "Name" : "CloudDesktop",
+        "Value" : "kostenplaats",
+        "ResourceId" : "/subscriptions/*/resourceGroups/cs-iton-p-wvdupd-rg/providers/Microsoft.Storage/storageAccounts/csitonpwvdupd",
+        "ResourceGroupName" : "*-wvd-rg",
+        "ResourceName" : "*-wvd-*-hp",
+        "ServiceName" : "hp",
+        "Location" : "WestEurope",
+        "ResourceType" : "Microsoft.DesktopVirtualization/applicationgroups",
+        "ResourceParent" :
+    },
+    {
+        "Name" : "kostenplaats",
+        "Value" : "",
+        "ResourceId" : "/subscriptions/*/resourceGroups/cs-iton-p-wvdupd-rg/providers/Microsoft.Storage/storageAccounts/csitonpwvdupd",
+        "ResourceGroupName" : "*-avd-rg",
+        "ResourceName" : "*-avd-*-hp",
+        "ServiceName" : "hp",
+        "Location" : "WestEurope",
+        "ResourceType" : "Microsoft.DesktopVirtualization/applicationgroups",
+        "ResourceParent" :
+    }
+]
