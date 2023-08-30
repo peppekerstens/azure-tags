@@ -48,7 +48,7 @@ function Get-AzTagSubscription{
     )
     $ResourceType = 'Microsoft.Subscription'
     $resources = Get-AzSubscription @PSBoundParameters
-    $resources | ForEach-Object {$_ | Add-Member -NotePropertyName ResourceId -NotePropertyValue "/susbscriptions/$($_.SubscriptionId)"}
+    $resources | ForEach-Object {$_ | Add-Member -NotePropertyName ResourceId -NotePropertyValue "/subscriptions/$($_.SubscriptionId)"}
     $resources | ForEach-Object {$_ | Add-Member -NotePropertyName ResourceType -NotePropertyValue $ResourceType}
     ConvertTo-AzTag -Resources $resources
 }
@@ -100,17 +100,22 @@ function Get-AzTag{
         $Value = '*'
         ,
         #[Parameter(ParameterSetName="Id")]
-        $ResourceId
+        $ResourceId = '*'
         ,
         #[Parameter(ParameterSetName="Type")]
-        $ResourceType
+        $ResourceType = '*'
     )
 
-    $PSBoundParameters.Remove('Name') | Out-Null
-    $PSBoundParameters.Remove('Value') | Out-Null
+    #$PSBoundParameters.Remove('Name') | Out-Null
+    #$PSBoundParameters.Remove('Value') | Out-Null
 
-    Get-AzTagSubscription | Select-AzTag @PSBoundParameters
-    Get-AzTagResource | Select-AzTag @PSBoundParameters
+    if (($ResourceType -eq 'Microsoft.Subscription') -or ($ResourceType -eq '*')){
+        Get-AzTagSubscription | Select-AzTag @PSBoundParameters
+    }
+    if ((!($ResourceType -eq 'Microsoft.Subscription')) -or ($ResourceType -eq '*')){
+        Get-AzTagResource | Select-AzTag @PSBoundParameters
+    }
+    
     <#
     switch ($ResourceType){
         'Microsoft.Subscription' {
@@ -132,68 +137,70 @@ function Set-AzTag{
         [tag[]]$tag
         ,
         #>
-        #[Parameter(Mandatory,ParameterSetName="Name")]
+        [Parameter(Mandatory)]
         $Name
         ,
-        #[Parameter(Mandatory,ParameterSetName="Name")]
+        [Parameter(Mandatory)]
         $Value
         ,
         #[Parameter(ParameterSetName="Id")]
-        $ResourceId
+        $ResourceId = '*'
         ,
         #[Parameter(ParameterSetName="Type")]
-        $ResourceType
+        $ResourceType = '*'
     )
 
     #$PSBoundParameters.Remove('Tag') | Out-Null
     $PSBoundParameters.Remove('Name') | Out-Null
     $PSBoundParameters.Remove('Value') | Out-Null
-    $resources = Get-AzResource @PSBoundParameters
+    $resources = @(Get-AzTag @PSBoundParameters)
+    $resourceUnique = @($resources | Select-Object -Property ResourceId -Unique)
     $tags = @{$Name = $Value}
     #If ($PSCmdlet.ParameterSetName('tag')){}
-    If ($PSBoundParameters.Keys -notin @('ResourceId','ResourceGroupName','ResourceType')){
-        if($PSCmdlet.ShouldProcess("on $($resources.count) resources","setting tag $($name)" )){
-            foreach ($resource in $resources) {
-                Update-AzTag -ResourceId $resource.id -Tag $tags -Operation Merge
+    #If ($PSBoundParameters.Keys -notin @('ResourceId','ResourceType')){
+        if(($resourceUnique.count -gt 1) -and ($PSCmdlet.ShouldProcess("on $($resourceUnique.count) resources","setting tag $($name)"))){
+            foreach ($item in $resourceUnique) {
+                Update-AzTag -ResourceId $item.ResourceId -Tag $tags -Operation Merge
             }
-        }
+        
     }else{
-        foreach ($resource in $resources) {
-            Update-AzTag -ResourceId $resource.id -Tag $tags -Operation Merge
-        }
+        Update-AzTag -ResourceId $resourceUnique[0].ResourceId -Tag $tags -Operation Merge
     }
+    #    foreach ($resource in $resources) {
+    #        Update-AzTag -ResourceId $resource.id -Tag $tags -Operation Merge
+    #    }
+    #}
 }
 
-function Delete-AzTag{
+function Remove-AzTag{
     [CmdletBinding(SupportsShouldProcess,ConfirmImpact = 'High')]
     param(
         [Parameter(Mandatory)]
         $Name
         ,
-        [Parameter(Mandatory)]
-        $Value
+        $Value = '*'
         ,
         #[Parameter(ParameterSetName="Id")]
-        $ResourceId
+        $ResourceId = '*'
         ,
         #[Parameter(ParameterSetName="Type")]
-        $ResourceType
+        $ResourceType = '*'
     )
 
-    $PSBoundParameters.Remove('Name') | Out-Null
-    $PSBoundParameters.Remove('Value') | Out-Null
-    $resources = Get-AzResource @PSBoundParameters
-    $tags = @{$Name = $Value}
-    
-    If ($PSBoundParameters.Keys -notin @('ResourceId','ResourceGroupName','ResourceType')){
-        if($PSCmdlet.ShouldProcess("Op $($resources.count) resources","zet tag $($name)" )){
-            foreach ($resource in $resources) {
-                Update-AzTag -ResourceId $resource.id -Tag $tags -Operation Delete
+    #$PSBoundParameters.Remove('Name') | Out-Null
+    #$PSBoundParameters.Remove('Value') | Out-Null
+    $resources = @(Get-AzTag @PSBoundParameters)  
+    #If ($PSBoundParameters.Keys -notin @('ResourceId','ResourceType')){
+        if(($resources.count -gt 1) -and ($PSCmdlet.ShouldProcess("on $($resources.count) resources","setting tag $($name)"))){
+            foreach ($item in $resources) {
+                $tags = @{$item.Name = $item.Value}
+                Update-AzTag -ResourceId $item.ResourceId -Tag $tags -Operation Delete
             }
-        }
+        #}
     }else{
-        foreach ($resource in $resources) {
-            Update-AzTag -ResourceId $resource.id -Tag $tags -Operation Delete
+        foreach ($item in $resources) {
+            $tags = @{$item.Name = $item.Value}
+            Update-AzTag -ResourceId $item.ResourceId -Tag $tags -Operation Delete
         }
     }
 }
