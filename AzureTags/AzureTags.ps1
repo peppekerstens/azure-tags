@@ -130,7 +130,7 @@ function Get-AzTag{
    
         [Parameter(ParameterSetName='ExtendedFunctionality')]
         [string]
-        $ResourceType = '*'
+        $ResourceType = '*',
 
         [Parameter(HelpMessage='The credentials, account, tenant, and subscription used for communication with Azure.')]
         [Alias('AzContext','AzureRmContext','AzureCredential')]

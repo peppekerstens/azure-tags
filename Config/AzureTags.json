@@ -42,7 +42,7 @@
         "ServiceName" : "hp",
         "Location" : "WestEurope",
         "ResourceType" : "Microsoft.DesktopVirtualization/applicationgroups",
-        "ResourceParent" :
+        "ResourceParent" : ""
     },
     {
         "Name" : "kostenplaats",
@@ -53,6 +53,6 @@
         "ServiceName" : "hp",
         "Location" : "WestEurope",
         "ResourceType" : "Microsoft.DesktopVirtualization/applicationgroups",
-        "ResourceParent" :
+        "ResourceParent" : ""
     }
 ]
