@@ -1,5 +1,143 @@
 [
     {
-        "ResourceType" : 
+        "BuildingBlock" : "Default",
+        "ResourceType" : "Microsoft.Subscription",
+        "Tags" : [
+            {
+                "Name" : "MagagedBy",
+                "Value" : null,
+                "Enum" : ["Ekco", "Customer", "Shared"]
+            }
+        ]
+    },
+    {
+        "BuildingBlock" : "Default",
+        "ResourceType" : "Microsoft.Resources/resourcegroups",
+        "Tags" : [
+            {
+                "Name" : "Deployment",
+                "Value" : null
+            },
+            {
+                "Name" : "Purpose",
+                "Value" : null,
+                "Enum" : ["Test","Acceptance","Production","Development","Recovery"] 
+            },
+            {
+                "Name" : "ServiceName",
+                "Value" : null
+            },
+            {
+                "Name" : "Cost",
+                "Value" : null
+            },
+            {
+                "Name" : "Contact",
+                "Value" : null
+            },
+            {
+                "Name" : "MagagedBy",
+                "Value" : null,
+                "Enum" : ["Ekco", "Customer", "Shared"]
+            }
+        ]
+    },
+    {
+        "BuildingBlock" : "Deployment",
+        "ResourceType" : "Microsoft.Subscription",
+        "Tags" : [
+            {
+                "Name" : "Deployment",
+                "Value" : null,
+                "Enum" : []
+            },
+            {
+                "Name" : "Deployment_[name]",
+                "Value" : null,
+                "Enum" : {
+                    "CloudSuiteVersion" : null,
+                    "CustomerName" : null,
+                    "CustomerShort" : null,
+                    "Armprefix" : null,
+                    "Date" : null
+                }
+            }
+        ]
+    },
+    {
+        "BuildingBlock" : "Deployment",
+        "ResourceType" : "Microsoft.Resources/resourcegroups",
+        "Tags" : [
+            {
+                "Name" : "Deployment",
+                "Value" : null
+            },
+            {
+                "Name" : "Purpose",
+                "Value" : null,
+                "Enum" : ["Test","Acceptance","Production","Development","Recovery"] 
+            },
+            {
+                "Name" : "ServiceName",
+                "Value" : null
+            },
+            {
+                "Name" : "Cost",
+                "Value" : null
+            },
+            {
+                "Name" : "Contact",
+                "Value" : null
+            },
+            {
+                "Name" : "MagagedBy",
+                "Value" : null,
+                "Enum" : ["Ekco", "Customer", "Shared"]
+            }
+        ]
+    },    
+    {
+        "BuildingBlock" : "Identity",
+        "ResourceType" : "Microsoft.Resources/resourcegroups",
+        "Tags" : [
+            {
+                "Name" : "PDC",
+                "Value" : null
+            },
+            {
+                "Name" : "InternalFQDN",
+                "Value" : null
+            },
+            {
+                "Name" : "PublicFQDN",
+                "Value" : null
+            },
+            {
+                "Name" : "NetbiosName",
+                "Value" : null
+            }
+        ]
+    },
+    {
+        "BuildingBlock" : "Identity",
+        "ResourceType" : "Microsoft.Resources/resourcegroups",
+        "Tags" : [
+            {
+                "Name" : "PDC",
+                "Value" : null
+            },
+            {
+                "Name" : "InternalFQDN",
+                "Value" : null
+            },
+            {
+                "Name" : "PublicFQDN",
+                "Value" : null
+            },
+            {
+                "Name" : "NetbiosName",
+                "Value" : null
+            }
+        ]
     }
 ]
